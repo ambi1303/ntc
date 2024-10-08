@@ -1,0 +1,61 @@
+import java.io.*;
+import java.util.*;
+
+public class FileCaesar {
+    // Method to encrypt the plaintext using Caesar Cipher technique
+    public static String encrypt(String plaintext, int key) {
+        StringBuilder cipherText = new StringBuilder();
+        
+        for (int i = 0; i < plaintext.length(); i++) {
+            char ch = plaintext.charAt(i);
+            
+            if (Character.isLetter(ch)) {
+                char base = Character.isUpperCase(ch) ? 'A' : 'a';
+                char shifted = (char) (((ch - base + key) % 26) + base);
+                cipherText.append(shifted);
+            } else {
+                cipherText.append(ch);
+            }
+        }
+        return cipherText.toString();
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        
+        System.out.print("Enter the input file name (with extension): ");
+        String inputFileName = sc.nextLine();
+        
+        System.out.print("Enter the output file name (with extension): ");
+        String outputFileName = sc.nextLine();
+        
+        System.out.print("Enter the shift value (1 to 25): ");
+        int shiftKey = sc.nextInt();
+
+        try {
+            // Reading the plaintext from the input file
+            BufferedReader reader = new BufferedReader(new FileReader(inputFileName));
+            StringBuilder plaintext = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                plaintext.append(line).append("\n");
+            }
+            reader.close();
+            
+            // Encrypting the plaintext
+            String encryptedText = encrypt(plaintext.toString(), shiftKey);
+            
+            // Writing the ciphertext to the output file
+            BufferedWriter writer = new BufferedWriter(new FileWriter(outputFileName));
+            writer.write(encryptedText);
+            writer.close();
+            
+            System.out.println("Encryption successful. Ciphertext has been written to " + outputFileName);
+            
+        } catch (IOException e) {
+            System.out.println("An error occurred while processing the file: " + e.getMessage());
+        }
+
+        sc.close();
+    }
+}

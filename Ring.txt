@@ -1,0 +1,126 @@
+//Java code to verify the rings
+import java.util.Scanner;
+import java.util.HashSet;
+import java.util.Set;
+
+public class Ring {
+    private Set<Integer> elements;
+
+    // Constructor to initialize the ring with a set of elements
+    public Ring(Set<Integer> elements) {
+        this.elements = elements;
+    }
+
+    // Closure property for addition
+    public boolean isClosedUnderAddition() {
+        for (int a : elements) {
+            for (int b : elements) {
+                if (!elements.contains(a + b)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    // Closure property for multiplication
+    public boolean isClosedUnderMultiplication() {
+        for (int a : elements) {
+            for (int b : elements) {
+                if (!elements.contains(a * b)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    // Associativity property for addition
+    public boolean isAssociativeAddition() {
+        for (int a : elements) {
+            for (int b : elements) {
+                for (int c : elements) {
+                    if ((a + (b + c)) != ((a + b) + c)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    // Associativity property for multiplication
+    public boolean isAssociativeMultiplication() {
+        for (int a : elements) {
+            for (int b : elements) {
+                for (int c : elements) {
+                    if ((a * (b * c)) != ((a * b) * c)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    // Distributive property
+    public boolean isDistributive() {
+        for (int a : elements) {
+            for (int b : elements) {
+                for (int c : elements) {
+                    if ((a * (b + c)) != ((a * b) + (a * c))) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    // Identity element for addition
+    public Integer getAdditiveIdentity() {
+        for (int e : elements) {
+            boolean isIdentity = true;
+            for (int a : elements) {
+                if ((e + a) != a || (a + e) != a) {
+                    isIdentity = false;
+                    break;
+                }
+            }
+            if (isIdentity) {
+                return e;
+            }
+        }
+        return null;
+    }
+
+    // Check if the structure is a ring
+    public boolean isRing() {
+        return isClosedUnderAddition() && isClosedUnderMultiplication() &&
+               isAssociativeAddition() && isAssociativeMultiplication() &&
+               isDistributive() && getAdditiveIdentity() != null;
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Set<Integer> elements = new HashSet<>();
+
+        System.out.println("Enter the elements of the ring (type 'done' to finish):");
+
+        while (scanner.hasNextInt()) {
+            elements.add(scanner.nextInt());
+        }
+        
+        scanner.next();  // Consume non-integer input
+        
+        Ring ring = new Ring(elements);
+
+        if (ring.isRing()) {
+            System.out.println("The set forms a ring.");
+        } else {
+            System.out.println("The set does not form a ring.");
+        }
+
+        scanner.close();
+    }
+}

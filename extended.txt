@@ -1,0 +1,30 @@
+//COde to find the gcd of two number using extended euclid algo
+import java.util.*;
+public class extended{
+	public static int extendedgcd(int a,int b,int[] result){
+		if(b==0){
+		result[0]=1;
+		result[1]=0;
+		return a;
+		}
+		int[] temp=new int[2];
+		int gcd=extendedgcd(b,a%b,temp);
+		
+		result[0]=temp[1];
+		result[1]=temp[0]-(a/b)*temp[1];
+		
+		return gcd;
+	}
+	public static void main(String args[]){
+		Scanner sc=new Scanner(System.in);
+		System.out.println("Enter the number 1:");
+		int a=sc.nextInt();
+		System.out.println("Enter the number 2: ");
+		int b=sc.nextInt();
+		int result[]=new int[2];
+		int gcd =extendedgcd(a,b,result);
+		
+		System.out.println("The gcd of "+a+" and "+b+" is "+gcd);
+		System.out.println("The Coefficeint of ax+by=gcd(a,b) are x="+result[0]+" y="+result[1]);
+	}
+}

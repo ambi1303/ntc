@@ -1,0 +1,65 @@
+//Java code for Chinese Remainder Theorem
+import java.util.*;
+public class crt{
+	public static int extended(int a,int b,int[] result){
+		if(b==0){
+			result[0]=1;
+			result[1]=0;
+			return a;
+		}
+		int[] temp=new int[2];
+		int gcd=extended(b,a%b,temp);
+		
+		result[0]=temp[1];
+		result[1]=temp[0]-(a/b)*temp[1];
+		
+		return gcd;
+		
+	}
+	public static int modInverse(int a,int m){
+		int result[]=new int[2];
+		int gcd=extended(a,m,result);
+		
+		if(gcd!=1){
+			            throw new IllegalArgumentException("Modular inverse does not exist");
+
+		}
+		return (result[0]+m)%m;
+		
+	}
+	public static int chinese(int[] a,int[] m){
+		int M=1;
+		for(int i=0;i<m.length;i++){
+			M*=m[i];
+		}
+		int x=0;
+		for(int i=0;i<a.length;i++){
+			int Mi=M/m[i];
+			int inverse=modInverse(Mi,m[i]);
+			x+=a[i]*Mi*inverse;
+			}
+			return x%M;
+	}
+	public static void main(String args[]){
+		Scanner sc=new Scanner(System.in);
+		System.out.println("Enter the number of congruences");
+		int k=sc.nextInt();
+		
+		int[] a=new int[k];
+		int[] m=new int[k];
+		
+		for (int i=0;i<k;i++){
+			System.out.println("Enter the remainder a["+(i+1)+ "]");
+			a[i]=sc.nextInt();
+			System.out.println("Enter the moduli m["+(i+1)+"]");
+			m[i]=sc.nextInt();
+			
+			
+		
+		}
+		int result=chinese(a,m);
+		System.out.println("The result of solution is :"+result);
+		
+	
+	}
+}

@@ -1,0 +1,58 @@
+import java.util.*;
+
+public class Ceaser{
+    // Encrypt the plaintext using Caesar Cipher technique
+    public static String encrypt(String plaintext, int key) {
+        StringBuilder cipherText = new StringBuilder();
+        
+        for (int i = 0; i < plaintext.length(); i++) {
+            char ch = plaintext.charAt(i);
+            
+            if (Character.isLetter(ch)) {
+                char base = Character.isUpperCase(ch) ? 'A' : 'a';
+                char shifted = (char) (((ch - base + key) % 26) + base);
+                cipherText.append(shifted);
+            } else {
+                cipherText.append(ch);
+            }
+        }
+        return cipherText.toString();
+    }
+
+    // Decrypt the ciphertext back to plaintext using Caesar Cipher technique
+    public static String decrypt(String ciphertext, int key) {
+        StringBuilder plainText = new StringBuilder();
+        
+        for (int i = 0; i < ciphertext.length(); i++) {
+            char ch = ciphertext.charAt(i);
+            
+            if (Character.isLetter(ch)) {
+                char base = Character.isUpperCase(ch) ? 'A' : 'a';
+                char shifted = (char) (((ch - base - key + 26) % 26) + base);  // Add 26 to avoid negative modulo
+                plainText.append(shifted);
+            } else {
+                plainText.append(ch);
+            }
+        }
+        return plainText.toString();
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter the text to encrypt:");
+        String plainText = sc.nextLine();
+
+        System.out.println("Enter a key from 1 to 25:");
+        int key = sc.nextInt();
+        
+        // Encrypt the text
+        String encrypted = encrypt(plainText, key);
+        System.out.println("Encrypted Data: " + encrypted);
+        
+        // Decrypt the text
+        String decrypted = decrypt(encrypted, key);
+        System.out.println("Decrypted Data: " + decrypted);
+        
+        sc.close();
+    }
+}
