@@ -1,0 +1,87 @@
+import java.util.Scanner;
+
+public class VigenereCipher {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the text to encrypt: ");
+        String plainText = scanner.nextLine();
+
+        System.out.print("Enter the encryption key: ");
+        String key = scanner.nextLine();
+
+        String encryptedText = encrypt(plainText, key);
+        System.out.println("Encrypted text: " + encryptedText);
+
+        String decryptedText = decrypt(encryptedText, key);
+        System.out.println("Decrypted text: " + decryptedText);
+
+        scanner.close();
+    }
+
+    public static String encrypt(String plainText, String key) {
+        StringBuilder encryptedText = new StringBuilder();
+        int keyLength = key.length();
+        int plainTextLength = plainText.length();
+
+        for (int i = 0; i < plainTextLength; i++) {
+            char plainChar = plainText.charAt(i);
+            char keyChar = key.charAt(i % keyLength);
+
+            if (Character.isLetter(plainChar)) {
+                char encryptedChar = encryptChar(plainChar, keyChar);
+                encryptedText.append(encryptedChar);
+            } else {
+                encryptedText.append(plainChar); // Preserve non-letter characters
+            }
+        }
+
+        return encryptedText.toString();
+    }
+
+    public static String decrypt(String encryptedText, String key) {
+        StringBuilder decryptedText = new StringBuilder();
+        int keyLength = key.length();
+        int encryptedTextLength = encryptedText.length();
+
+        for (int i = 0; i < encryptedTextLength; i++) {
+            char encryptedChar = encryptedText.charAt(i);
+            char keyChar = key.charAt(i % keyLength);
+
+            if (Character.isLetter(encryptedChar)) {
+                char decryptedChar = decryptChar(encryptedChar, keyChar);
+                decryptedText.append(decryptedChar);
+            } else {
+                decryptedText.append(encryptedChar); // Preserve non-letter characters
+            }
+        }
+
+        return decryptedText.toString();
+    }
+
+    public static char encryptChar(char plainChar, char keyChar) {
+        // Normalize to uppercase
+        plainChar = Character.toUpperCase(plainChar);
+        keyChar = Character.toUpperCase(keyChar);
+
+        int plainCharValue = plainChar - 'A';
+        int keyCharValue = keyChar - 'A';
+
+        // Calculate encrypted character value
+        int encryptedCharValue = (plainCharValue + keyCharValue) % 26;
+        return (char) (encryptedCharValue + 'A');
+    }
+
+    public static char decryptChar(char encryptedChar, char keyChar) {
+        // Normalize to uppercase
+        encryptedChar = Character.toUpperCase(encryptedChar);
+        keyChar = Character.toUpperCase(keyChar);
+
+        int encryptedCharValue = encryptedChar - 'A';
+        int keyCharValue = keyChar - 'A';
+
+        // Calculate decrypted character value
+        int decryptedCharValue = (encryptedCharValue - keyCharValue + 26) % 26;
+        return (char) (decryptedCharValue + 'A');
+    }
+}

@@ -1,0 +1,78 @@
+import java.util.Scanner;
+
+public class RailFenceCipherCracker {
+    
+    // Function to decrypt the Rail Fence Cipher with a given number of rails
+    public static String decrypt(String cipherText, int rails) {
+        int length = cipherText.length();
+        char[] decryptedText = new char[length];
+        
+        // Create a 2D array to simulate the zigzag pattern
+        char[][] rail = new char[rails][length];
+        
+        // Step 1: Create the rail matrix to store the positions of characters
+        boolean[][] railPattern = new boolean[rails][length];
+        
+        // Determine the positions of the characters in the matrix
+        int row = 0, col = 0;
+        boolean goingDown = false;
+        
+        for (int i = 0; i < length; i++) {
+            railPattern[row][col] = true;
+            col++;
+            
+            if (row == 0 || row == rails - 1) {
+                goingDown = !goingDown;
+            }
+            
+            row = goingDown ? row + 1 : row - 1;
+        }
+        
+        // Step 2: Fill the rail matrix with characters from the ciphertext
+        int index = 0;
+        for (int i = 0; i < rails; i++) {
+            for (int j = 0; j < length; j++) {
+                if (railPattern[i][j]) {
+                    rail[i][j] = cipherText.charAt(index++);
+                }
+            }
+        }
+        
+        // Step 3: Read the message from the rail matrix
+        row = 0;
+        col = 0;
+        goingDown = false;
+        
+        for (int i = 0; i < length; i++) {
+            if (railPattern[row][col]) {
+                decryptedText[i] = rail[row][col++];
+            }
+            
+            if (row == 0 || row == rails - 1) {
+                goingDown = !goingDown;
+            }
+            
+            row = goingDown ? row + 1 : row - 1;
+        }
+        
+        return new String(decryptedText);
+    }
+
+    // Main function to try different rail heights and attempt to crack the cipher
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        
+        // Input the ciphertext to crack
+        System.out.print("Enter the ciphertext: ");
+        String cipherText = scanner.nextLine();
+        
+        // Try different rail heights (2 to 10) and attempt decryption
+        System.out.println("\nTrying different fence heights:\n");
+        for (int rails = 2; rails <= 10; rails++) {
+            String decryptedText = decrypt(cipherText, rails);
+            System.out.println("Decrypted text with " + rails + " rails: " + decryptedText);
+        }
+        
+        scanner.close();
+    }
+}

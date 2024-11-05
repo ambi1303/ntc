@@ -1,0 +1,27 @@
+public class CaesarCipherCracker {
+    public static void main(String[] args) {
+        String ciphertext = "JGNNQ YQTNF"; // Example Ciphertext
+        crackCaesarCipher(ciphertext);
+    }
+
+    public static void crackCaesarCipher(String ciphertext) {
+        System.out.println("Cracking Caesar Cipher:");
+        for (int shift = 0; shift < 26; shift++) {
+            String decryptedText = decrypt(ciphertext, shift);
+            System.out.println("Shift " + shift + ": " + decryptedText);
+        }
+    }
+
+    public static String decrypt(String text, int shift) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            if (Character.isLetter(c)) {
+                char base = Character.isUpperCase(c) ? 'A' : 'a';
+                c = (char) ((c - base - shift + 26) % 26 + base);
+            }
+            result.append(c);
+        }
+        return result.toString(); // Don't forget to return the result
+    }
+}

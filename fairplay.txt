@@ -1,0 +1,141 @@
+import java.util.HashSet;
+import java.util.Scanner;
+
+public class PlayfairCipher {
+    private static final char PAD_CHAR = 'X';
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the key: ");
+        String key = scanner.nextLine().toUpperCase().replaceAll("[^A-Z]", ""); // Normalize and remove non-letters
+
+        System.out.print("Enter the plaintext: ");
+        String plaintext = scanner.nextLine().toUpperCase().replaceAll("[^A-Z]", ""); // Normalize and remove non-letters
+
+        String encryptedText = encrypt(plaintext, key);
+        System.out.println("Encrypted text: " + encryptedText);
+
+        String decryptedText = decrypt(encryptedText, key);
+        System.out.println("Decrypted text: " + decryptedText);
+
+        scanner.close();
+    }
+
+    public static String encrypt(String plaintext, String key) {
+        char[][] matrix = generateMatrix(key);
+        String formattedPlaintext = formatPlaintext(plaintext);
+
+        StringBuilder encryptedText = new StringBuilder();
+        for (int i = 0; i < formattedPlaintext.length(); i += 2) {
+            char char1 = formattedPlaintext.charAt(i);
+            char char2 = formattedPlaintext.charAt(i + 1);
+            int[] char1Position = findPosition(matrix, char1);
+            int[] char2Position = findPosition(matrix, char2);
+
+            char encryptedChar1, encryptedChar2;
+            if (char1Position[0] == char2Position[0]) { // Same row
+                encryptedChar1 = matrix[char1Position[0]][(char1Position[1] + 1) % 5];
+                encryptedChar2 = matrix[char2Position[0]][(char2Position[1] + 1) % 5];
+            } else if (char1Position[1] == char2Position[1]) { // Same column
+                encryptedChar1 = matrix[(char1Position[0] + 1) % 5][char1Position[1]];
+                encryptedChar2 = matrix[(char2Position[0] + 1) % 5][char2Position[1]];
+            } else { // Rectangle
+                encryptedChar1 = matrix[char1Position[0]][char2Position[1]];
+                encryptedChar2 = matrix[char2Position[0]][char1Position[1]];
+            }
+
+            encryptedText.append(encryptedChar1).append(encryptedChar2);
+        }
+
+        return encryptedText.toString();
+    }
+
+    public static String decrypt(String ciphertext, String key) {
+        char[][] matrix = generateMatrix(key);
+        StringBuilder decryptedText = new StringBuilder();
+        for (int i = 0; i < ciphertext.length(); i += 2) {
+            char char1 = ciphertext.charAt(i);
+            char char2 = ciphertext.charAt(i + 1);
+            int[] char1Position = findPosition(matrix, char1);
+            int[] char2Position = findPosition(matrix, char2);
+            char decryptedChar1, decryptedChar2;
+            if (char1Position[0] == char2Position[0]) { // Same row
+                decryptedChar1 = matrix[char1Position[0]][(char1Position[1] + 4) % 5];
+                decryptedChar2 = matrix[char2Position[0]][(char2Position[1] + 4) % 5];
+            } else if (char1Position[1] == char2Position[1]) { // Same column
+                decryptedChar1 = matrix[(char1Position[0] + 4) % 5][char1Position[1]];
+                decryptedChar2 = matrix[(char2Position[0] + 4) % 5][char2Position[1]];
+            } else { // Rectangle
+                decryptedChar1 = matrix[char1Position[0]][char2Position[1]];
+                decryptedChar2 = matrix[char2Position[0]][char1Position[1]];
+            }
+
+            decryptedText.append(decryptedChar1).append(decryptedChar2);
+        }
+
+        return decryptedText.toString().replace(String.valueOf(PAD_CHAR), ""); // Remove padding
+    }
+
+    private static char[][] generateMatrix(String key) {
+        char[][] matrix = new char[5][5];
+        String keyWithoutDuplicates = removeDuplicates(key + "ABCDEFGHIKLMNOPQRSTUVWXYZ"); // 'J' is omitted
+        int keyIndex = 0;
+        int rowIndex = 0;
+        int columnIndex = 0;
+
+        while (keyIndex < keyWithoutDuplicates.length()) {
+            matrix[rowIndex][columnIndex] = keyWithoutDuplicates.charAt(keyIndex);
+            columnIndex++;
+            if (columnIndex == 5) {
+                columnIndex = 0;
+                rowIndex++;
+            }
+            keyIndex++;
+        }
+
+        return matrix;
+    }
+
+    private static String removeDuplicates(String str) {
+        HashSet<Character> seen = new HashSet<>();
+        StringBuilder result = new StringBuilder();
+        for (char c : str.toCharArray()) {
+            if (seen.add(c)) { // Only add if not already seen
+                result.append(c);
+            }
+        }
+        return result.toString();
+    }
+
+    private static String formatPlaintext(String plaintext) {
+        StringBuilder formattedText = new StringBuilder();
+        char previousChar = plaintext.charAt(0);
+        formattedText.append(previousChar);
+
+        for (int i = 1; i < plaintext.length(); i++) {
+            char currentChar = plaintext.charAt(i);
+            if (currentChar == previousChar) { // Same character, add padding
+                formattedText.append(PAD_CHAR).append(currentChar);
+            } else {
+                formattedText.append(currentChar);
+                previousChar = currentChar;
+            }
+        }
+        if (formattedText.length() % 2 != 0) { // Pad with 'X' if odd length
+            formattedText.append(PAD_CHAR);
+        }
+        return formattedText.toString();
+    }
+
+    private static int[] findPosition(char[][] matrix, char c) {
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                if (matrix[i][j] == c) {
+                    return new int[]{i, j};
+                }
+            }
+        }
+        throw new IllegalArgumentException("Character not found in matrix: " + c);
+    }
+}
